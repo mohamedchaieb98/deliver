@@ -4,6 +4,10 @@ Run this to create the database tables
 """
 from app.core.database import Base, engine
 from app.models.deliverer import Deliverer
+from app.models.client import Client
+from app.models.sales import Reseller, Order, Payment
+from app.models.products import Product, Supplier, SupplierProduct, SupplierOrder, OrderItem
+
 # Import other models as we create them
 
 def create_tables():

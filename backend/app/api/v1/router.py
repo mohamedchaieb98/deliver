@@ -15,7 +15,9 @@ from app.api.v1.endpoints import (
 )
 
 api_router = APIRouter()
-
+# Ici : 
+# 'prefix' est pour l'URL (/api/v1/clients)
+# 'tags' est pour l'affichage Swagger
 api_router.include_router(deliverers.router, prefix="/deliverers", tags=["deliverers"])
 api_router.include_router(clients.router, prefix="/clients", tags=["clients"])
 api_router.include_router(resellers.router, prefix="/resellers", tags=["resellers"])
