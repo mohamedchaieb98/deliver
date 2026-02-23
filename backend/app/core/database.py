@@ -18,7 +18,7 @@ Base = declarative_base()
 
 # No Redis for now
 redis_client = None
-print("✅ Using SQLite database for development")
+print("[INFO] Using SQLite database for development")
 
 # Database dependency for FastAPI
 def get_db():

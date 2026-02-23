@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-
+from uuid import UUID
 router = APIRouter()
 
 @router.get("/")
@@ -19,5 +19,5 @@ def optimize_route(route_id: str):
     return {}
 
 @router.get("/deliverer/{deliverer_id}/today")
-def get_deliverer_route_today(deliverer_id: str):
+def get_deliverer_route_today(deliverer_id: UUID):
     return {}

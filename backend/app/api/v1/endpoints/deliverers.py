@@ -32,7 +32,7 @@ def create_deliverer(
 
 @router.get("/{deliverer_id}", response_model=DelivererResponse)
 def get_deliverer(
-    deliverer_id: str, 
+    deliverer_id: UUID, 
     db: Session = Depends(get_db)
 ):
     """Get a specific deliverer by ID"""
@@ -60,7 +60,7 @@ def update_deliverer(
     return update_deliverer
 
 @router.delete("/{deliverer_id}")
-def delete_deliverer(deliverer_id: str, db: Session = Depends(get_db)):
+def delete_deliverer(deliverer_id: UUID, db: Session = Depends(get_db)):
     """Delete a deliverer"""
     deleted_deliverer = crud_deliverer.delete_deliverer(db, deliverer_id=deliverer_id)
     if not deleted_deliverer:

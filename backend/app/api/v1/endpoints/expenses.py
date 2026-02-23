@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from uuid import UUID
 
 router = APIRouter()
 
@@ -15,5 +16,5 @@ def get_expense_categories():
     return []
 
 @router.get("/deliverer/{deliverer_id}")
-def get_deliverer_expenses(deliverer_id: str):
+def get_deliverer_expenses(deliverer_id: UUID):
     return []

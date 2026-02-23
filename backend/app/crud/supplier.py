@@ -21,7 +21,7 @@ def get_active_suppliers(db: Session, skip: int = 0, limit: int = 100):
 
 # Update : mettre à jour les infos d'un frs
 def update_supplier(db: Session, supplier_id: str, update_data: dict):
-    supplier = db.query(Supplier).filter(Supplier.id == supplier_id).first()
+    supplier = db.query(Supplier).filter(Supplier.id == str(supplier_id)).first()
     if not supplier:
         return None
     for key, value in update_data.items():
@@ -32,7 +32,7 @@ def update_supplier(db: Session, supplier_id: str, update_data: dict):
 
 # Delete : désactiver un frs
 def delete_supplier(db: Session, supplier_id: str):
-    supplier = db.query(Supplier).filter(Supplier.id == supplier_id).first()
+    supplier = db.query(Supplier).filter(Supplier.id == str(supplier_id)).first()
     if not supplier:
         return None
     supplier.is_active = False

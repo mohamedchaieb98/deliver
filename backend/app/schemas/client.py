@@ -28,6 +28,8 @@ class ClientUpdate(BaseModel):
     email: Optional[EmailStr] = None
     phone_number: Optional[str] = None
     address: Optional[str] = None
+    client_type: Optional[str] = None
+    payment_terms: Optional[str] = None
     is_active: Optional[bool] = None
 
 # back -> front

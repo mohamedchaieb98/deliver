@@ -12,7 +12,7 @@ def create_client(db:Session , client_data : dict):
     return client_data
 
 # READ : Lire un client par son ID
-def get_client_by_id(db: Session, client_id: str):
+def get_client_by_id(db: Session, client_id):
     # On s'assure que client_id est bien une string pour la comparaison SQLite
     return db.query(Client).filter(Client.id == str(client_id)).first()
 
@@ -25,7 +25,7 @@ def get_active_clients(db:Session , skip: int = 0, limit: int = 12):
     return db.query(Client).filter(Client.is_active == True).offset(skip).limit(limit).all()
 
 # UPDATE : Mettre à jour un client
-def update_client(db: Session, client_id: str, update_data: dict):
+def update_client(db: Session, client_id, update_data: dict):
     client_obj = db.query(Client).filter(Client.id == str(client_id)).first()
     
     if client_obj:
@@ -36,8 +36,8 @@ def update_client(db: Session, client_id: str, update_data: dict):
     return client_obj
 
 # DELETE (soft delete) : Supprimer un client (cad désactiver au lieu de supprimer directement)
-def delete_client(db: Session, client_id: str):
-    client = db.query(Client).filter(Client.id == client_id).first()
+def delete_client(db: Session, client_id):
+    client = db.query(Client).filter(Client.id == str(client_id)).first()
     if client:
         client.is_active = False  # Désactiver le client au lieu de le supprimer
         db.commit()  # Sauvegarder les changements

@@ -17,7 +17,7 @@ def seed_deliverers():
         # Check if we already have data
         existing = db.query(Deliverer).first()
         if existing:
-            print("✅ Sample data already exists")
+            print("Sample data already exists")
             return
         
         # Create sample deliverers
@@ -79,15 +79,15 @@ def seed_deliverers():
             db.add(deliverer)
         
         db.commit()
-        print(f"✅ Created {len(deliverers)} sample deliverers")
+        print(f"Created {len(deliverers)} sample deliverers")
         
     except Exception as e:
         db.rollback()
-        print(f"❌ Error creating sample data: {e}")
+        print(f"Error creating sample data: {e}")
     finally:
         db.close()
 
 if __name__ == "__main__":
-    print("🌱 Seeding database with sample data...")
+    print(" Seeding database with sample data...")
     seed_deliverers()
-    print("✅ Database seeding completed!")
+    print("Database seeding completed!")
