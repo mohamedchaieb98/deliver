@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
 
-# Force SQLite for development
+# Force SQLite for development coniguration
 DATABASE_URL = "sqlite:///./water_delivery.db"
 
 # SQLite Database (for development)
@@ -18,7 +18,7 @@ Base = declarative_base()
 
 # No Redis for now
 redis_client = None
-print("✅ Using SQLite database for development")
+print("[INFO] Using SQLite database for development")
 
 # Database dependency for FastAPI
 def get_db():

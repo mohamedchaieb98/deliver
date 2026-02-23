@@ -1,58 +1,42 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
+from uuid import UUID
+
 
 from app.core.database import get_db
 from app.models.deliverer import Deliverer
 from app.schemas.deliverer import DelivererCreate, DelivererUpdate, DelivererResponse
+from app.crud import deliverer as crud_deliverer
 
 router = APIRouter()
 
 @router.get("/", response_model=List[DelivererResponse])
 def get_deliverers(
-    skip: int = 0,
-    limit: int = 100,
-    active: Optional[bool] = None,
-    territory: Optional[str] = None,
+    # skip: int = 0,
+    # limit: int = 100,
+    # active: Optional[bool] = None,
+    # territory: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
     """Get all deliverers with optional filters"""
-    query = db.query(Deliverer)
-    
-    # Apply filters
-    if active is not None:
-        query = query.filter(Deliverer.is_available == active)
-    if territory:
-        query = query.filter(Deliverer.territory == territory)
-    
-    deliverers = query.offset(skip).limit(limit).all()
-    return deliverers
+    return crud_deliverer.get_all_deliverers(db)
 
-@router.post("/", response_model=DelivererResponse)
+@router.post("/", response_model=DelivererResponse, status_code=status.HTTP_201_CREATED)
 def create_deliverer(
     deliverer: DelivererCreate,
     db: Session = Depends(get_db)
 ):
     """Create a new deliverer"""
-    # Check if employee_id already exists
-    existing = db.query(Deliverer).filter(Deliverer.employee_id == deliverer.employee_id).first()
-    if existing:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Deliverer with employee_id '{deliverer.employee_id}' already exists"
-        )
-    
-    # Create new deliverer
-    db_deliverer = Deliverer(**deliverer.dict())
-    db.add(db_deliverer)
-    db.commit()
-    db.refresh(db_deliverer)
-    return db_deliverer
+    return crud_deliverer.create_deliverer(db=db, deliverer_data=deliverer.dict())
 
 @router.get("/{deliverer_id}", response_model=DelivererResponse)
-def get_deliverer(deliverer_id: str, db: Session = Depends(get_db)):
+def get_deliverer(
+    deliverer_id: UUID, 
+    db: Session = Depends(get_db)
+):
     """Get a specific deliverer by ID"""
-    deliverer = db.query(Deliverer).filter(Deliverer.id == deliverer_id).first()
+    deliverer = crud_deliverer.get_deliverer_by_id(db, deliverer_id)
     if not deliverer:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -62,40 +46,30 @@ def get_deliverer(deliverer_id: str, db: Session = Depends(get_db)):
 
 @router.put("/{deliverer_id}", response_model=DelivererResponse)
 def update_deliverer(
-    deliverer_id: str,
+    deliverer_id: UUID,
     deliverer: DelivererUpdate,
     db: Session = Depends(get_db)
 ):
     """Update a deliverer"""
-    db_deliverer = db.query(Deliverer).filter(Deliverer.id == deliverer_id).first()
-    if not db_deliverer:
+    update_deliverer = crud_deliverer.update_deliverer(db, deliverer_id=deliverer_id, update_data=deliverer.dict(exclude_unset=True))
+    if not update_deliverer:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Deliverer not found"
         )
-    
-    # Update fields
-    update_data = deliverer.dict(exclude_unset=True)
-    for field, value in update_data.items():
-        setattr(db_deliverer, field, value)
-    
-    db.commit()
-    db.refresh(db_deliverer)
-    return db_deliverer
+    return update_deliverer
 
 @router.delete("/{deliverer_id}")
-def delete_deliverer(deliverer_id: str, db: Session = Depends(get_db)):
+def delete_deliverer(deliverer_id: UUID, db: Session = Depends(get_db)):
     """Delete a deliverer"""
-    db_deliverer = db.query(Deliverer).filter(Deliverer.id == deliverer_id).first()
-    if not db_deliverer:
+    deleted_deliverer = crud_deliverer.delete_deliverer(db, deliverer_id=deliverer_id)
+    if not deleted_deliverer:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Deliverer not found"
         )
-    
-    db.delete(db_deliverer)
-    db.commit()
     return {"message": "Deliverer deleted successfully"}
+
 
 @router.get("/stats/summary")
 def get_deliverer_stats(db: Session = Depends(get_db)):

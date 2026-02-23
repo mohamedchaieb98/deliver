@@ -29,3 +29,5 @@ Pillow==10.1.0
 
 # Development
 python-dotenv==1.0.0
+
+pydantic[email]
