@@ -1,6 +1,6 @@
 # tout ce qui concerne la vente
 
-from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey
+from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey, Numeric, Integer
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
@@ -44,6 +44,15 @@ class Payment(Base):
     
     # id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
+    order_id = Column(String(36), ForeignKey("orders.id"), nullable=True, index=True)
+    amount = Column(Numeric(10,2), nullable=False, default=0)
     payment_method = Column(String(20), nullable=False)
-    status = Column(String(20), default='pending')
+    payment_date = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    transaction_id = Column(String(100), nullable=True, index=True)
+    status = Column(String(20), default='pending', index=True)
+    processed_by = Column(String(36), nullable=True)
+    notes = Column(String(1000), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    # Relation to order
+    order = relationship("Order", backref="payments")
