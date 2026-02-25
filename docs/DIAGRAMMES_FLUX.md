@@ -764,7 +764,6 @@ deliver/
 │   ├── 📄 Dockerfile
 │   ├── 📄 alembic.ini  (DB migrations)
 │   ├── 📄 create_tables.py
-│   ├── 📄 seed_database.py
 │   │
 │   ├── 📁 uploads/
 │   │   └── [Fichiers uploadés]

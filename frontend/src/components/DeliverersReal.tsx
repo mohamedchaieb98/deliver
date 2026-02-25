@@ -114,7 +114,6 @@ const DeliverersReal = () => {
           <ul style={{ margin: '8px 0 0 20px' }}>
             <li>Make sure your backend is running: <code>uvicorn app.main:app --reload</code></li>
             <li>Check backend is accessible at: <a href="http://localhost:8000/docs" target="_blank" rel="noopener noreferrer">http://localhost:8000/docs</a></li>
-            <li>Verify you have deliverer data with: <code>python seed_database.py</code></li>
           </ul>
         </div>
       </div>
