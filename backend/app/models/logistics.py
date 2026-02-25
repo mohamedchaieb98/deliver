@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Boolean, DateTime
+from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey, Numeric, Date, Time, Integer
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 import uuid
@@ -6,78 +6,36 @@ import uuid
 from app.core.database import Base
 
 
-# class Reseller(Base):
-#     __tablename__ = "resellers"
-    
-#     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
-#     business_name = Column(String(200), nullable=False)
-#     contact_person = Column(String(200), nullable=True)
-#     email = Column(String(255), nullable=True)
-#     phone_number = Column(String(20), nullable=True)
-#     is_active = Column(Boolean, default=True, index=True)
-#     created_at = Column(DateTime(timezone=True), server_default=func.now())
-#     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
-
-
-# class Supplier(Base):
-#     __tablename__ = "suppliers"
-    
-#     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
-#     name = Column(String(200), nullable=False)
-#     contact_person = Column(String(200), nullable=True)
-#     email = Column(String(255), nullable=True)
-#     phone_number = Column(String(20), nullable=True)
-#     is_active = Column(Boolean, default=True, index=True)
-#     created_at = Column(DateTime(timezone=True), server_default=func.now())
-#     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
-
-
-# class Product(Base):
-#     __tablename__ = "products"
-    
-#     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
-#     name = Column(String(200), nullable=False)
-#     description = Column(String(500), nullable=True)
-#     category = Column(String(50), nullable=False)
-#     size = Column(String(20), nullable=True)
-#     is_active = Column(Boolean, default=True, index=True)
-#     created_at = Column(DateTime(timezone=True), server_default=func.now())
-#     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
-
-
-# class Order(Base):
-#     __tablename__ = "orders"
-    
-#     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
-#     order_number = Column(String(20), unique=True, nullable=False)
-#     status = Column(String(20), default='pending')
-#     created_at = Column(DateTime(timezone=True), server_default=func.now())
-#     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
-
-
 class Route(Base):
     __tablename__ = "routes"
     
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
-    route_name = Column(String(100), nullable=True)
-    status = Column(String(20), default='planned')
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
+    route_name = Column(String(100), nullable=True, index=True)
+    deliverer_id = Column(String(36), ForeignKey("deliverers.id"), nullable=True, index=True)
+    route_date = Column(Date, nullable=True, index=True)
+    status = Column(String(20), default='planned', index=True)
+    planned_start_time = Column(Time, nullable=True)
+    actual_start_time = Column(Time, nullable=True)
+    estimated_duration = Column(Integer, nullable=True)  # minutes
+    actual_duration = Column(Integer, nullable=True)     # minutes
+    total_distance = Column(Numeric(8, 2), nullable=True) # kilometers
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
-
-
-# class Payment(Base):
-#     __tablename__ = "payments"
-    
-#     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
-#     payment_method = Column(String(20), nullable=False)
-#     status = Column(String(20), default='pending')
-#     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
 class Expense(Base):
     __tablename__ = "expenses"
     
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
-    description = Column(String(500), nullable=False)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
+    # deliverer_id = Column(String(36), ForeignKey("deliverers.id"), nullable=True, index=True)
+    amount = Column(Numeric(10, 2), nullable=False, default=0) #Montant de la dépense
+    description = Column(String(1000), nullable=False)
+    expense_date = Column(Date, nullable=False)
+    receipt_photo_path = Column(String(500), nullable=True)
+    location = Column(String(200), nullable=True)
+    is_reimbursable = Column(Boolean, default=True)
     status = Column(String(20), default='pending')
+    approved_by = Column(String(36), nullable=True)
+    approved_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

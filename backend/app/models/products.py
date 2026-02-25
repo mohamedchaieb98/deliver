@@ -43,6 +43,7 @@ class Product(Base):
     # Relations
     order_items = relationship("OrderItem", back_populates="product")
     supplier_products = relationship("SupplierProduct", back_populates="product")
+    inventory_items = relationship("Inventory", back_populates="product")
 
 
 class SupplierProduct(Base):

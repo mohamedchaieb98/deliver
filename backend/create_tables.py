@@ -7,8 +7,8 @@ from app.models.deliverer import Deliverer
 from app.models.client import Client
 from app.models.sales import Reseller, Order, Payment
 from app.models.products import Product, Supplier, SupplierProduct, SupplierOrder, OrderItem
-
-# Import other models as we create them
+from app.models.inventory import Inventory
+from app.models.logistics import Expense
 
 def create_tables():
     """Create all database tables"""
