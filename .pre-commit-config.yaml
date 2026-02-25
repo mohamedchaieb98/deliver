@@ -1,0 +1,68 @@
+# Pre-commit configuration for Python backend
+repos:
+  # Standard pre-commit hooks (backend only)
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        files: ^backend/.*\.(py|txt|yaml|yml|toml)$
+      - id: end-of-file-fixer
+        files: ^backend/.*\.(py|txt|yaml|yml|toml)$
+      - id: check-yaml
+        files: ^backend/.*\.ya?ml$
+      - id: check-added-large-files
+        files: ^backend/
+      - id: check-json
+        files: ^backend/.*\.json$
+      - id: check-toml
+        files: ^backend/.*\.toml$
+      - id: check-merge-conflict
+        files: ^backend/
+      - id: debug-statements
+        files: ^backend/.*\.py$
+      - id: requirements-txt-fixer
+        files: ^backend/requirements.*\.txt$
+
+  # Python import sorting
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        name: isort (python)
+        files: ^backend/.*\.py$
+        args: ["--profile", "black", "--line-length=88"]
+
+  # Python code formatting
+  - repo: https://github.com/psf/black
+    rev: 23.12.1
+    hooks:
+      - id: black
+        name: black
+        files: ^backend/.*\.py$
+        args: ["--line-length=88"]
+
+  # Python linting
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+        name: flake8
+        files: ^backend/.*\.py$
+        args: [
+          "--max-line-length=88",
+          "--extend-ignore=E203,W503,E501,E712,F541,E402",
+          "--exclude=venv,migrations,__pycache__,.git"
+        ]
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.15.0
+    hooks:
+      - id: pyupgrade
+        name: pyupgrade
+        files: ^backend/.*\.py$
+        args: ["--py38-plus"]
+
+# Global settings
+default_language_version:
+  python: python3
+
+fail_fast: false

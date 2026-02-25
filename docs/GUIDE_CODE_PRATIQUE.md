@@ -535,9 +535,9 @@ def create_deliverer(
 
 **4️⃣ BD exécute INSERT:**
 ```sql
-INSERT INTO deliverers 
+INSERT INTO deliverers
   (id, name, employee_id, email, territory, is_available, created_at, updated_at)
-VALUES 
+VALUES
   (
     'f47ac10b-58cc-4372-a567-0e02b2c3d479',
     'Karim',
@@ -762,4 +762,3 @@ sqlite> .exit
 http://localhost:8000/docs
 http://localhost:8000/redoc
 ```
-

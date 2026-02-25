@@ -1,13 +1,20 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
 from typing import List
 from uuid import UUID
 
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
 from app.core.database import get_db
 from app.crud import route as crud_route
-from app.schemas.route import RouteCreate, RouteUpdate, RouteResponse
+from app.schemas.route import RouteCreate, RouteResponse, RouteUpdate
 
 router = APIRouter()
+
+
+@router.get("/categories")
+def get_route_categories():
+    """Get available route categories"""
+    return {"categories": ["delivery", "pickup", "maintenance", "emergency"]}
 
 
 @router.get("/", response_model=List[RouteResponse])
@@ -30,7 +37,9 @@ def get_route(route_id: str, db: Session = Depends(get_db)):
 
 @router.put("/{route_id}", response_model=RouteResponse)
 def update_route(route_id: str, route_in: RouteUpdate, db: Session = Depends(get_db)):
-    route = crud_route.update_route(db, route_id=route_id, update_data=route_in.dict(exclude_unset=True))
+    route = crud_route.update_route(
+        db, route_id=route_id, update_data=route_in.dict(exclude_unset=True)
+    )
     if not route:
         raise HTTPException(status_code=404, detail="Route not found")
     return route
@@ -54,5 +63,10 @@ def optimize_route(route_id: str):
 def get_deliverer_route_today(deliverer_id: UUID, db: Session = Depends(get_db)):
     # Simple filter by deliverer and route_date == today
     from datetime import date
+
     all_routes = crud_route.get_all_routes(db)
-    return [r for r in all_routes if r.deliverer_id == str(deliverer_id) and (r.route_date == date.today())]
+    return [
+        r
+        for r in all_routes
+        if r.deliverer_id == str(deliverer_id) and (r.route_date == date.today())
+    ]

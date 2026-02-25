@@ -168,7 +168,7 @@ CREATE TABLE orders (
     notes TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW(),
-    
+
     CONSTRAINT check_client_or_reseller CHECK ((client_id IS NOT NULL) != (reseller_id IS NOT NULL))
 );
 
@@ -328,7 +328,7 @@ CREATE INDEX idx_inventory_movements_date ON inventory_movements(created_at);
 ### 1. Deliverer Performance View
 ```sql
 CREATE VIEW deliverer_performance AS
-SELECT 
+SELECT
     d.id,
     u.first_name,
     u.last_name,
@@ -336,7 +336,7 @@ SELECT
     COUNT(DISTINCT o.id) as total_deliveries,
     COUNT(CASE WHEN o.status = 'delivered' THEN 1 END) as successful_deliveries,
     ROUND(
-        COUNT(CASE WHEN o.status = 'delivered' THEN 1 END) * 100.0 / 
+        COUNT(CASE WHEN o.status = 'delivered' THEN 1 END) * 100.0 /
         NULLIF(COUNT(DISTINCT o.id), 0), 2
     ) as success_rate,
     SUM(CASE WHEN o.status = 'delivered' THEN o.total_amount ELSE 0 END) as total_sales,
@@ -352,7 +352,7 @@ GROUP BY d.id, u.first_name, u.last_name;
 ### 2. Low Stock Alert View
 ```sql
 CREATE VIEW low_stock_alerts AS
-SELECT 
+SELECT
     p.id,
     p.name,
     p.category,
@@ -369,7 +369,7 @@ AND p.is_active = true;
 ### 3. Daily Sales Summary View
 ```sql
 CREATE VIEW daily_sales_summary AS
-SELECT 
+SELECT
     DATE(o.order_date) as sale_date,
     COUNT(*) as total_orders,
     COUNT(CASE WHEN o.status = 'delivered' THEN 1 END) as delivered_orders,
@@ -390,16 +390,16 @@ RETURNS TRIGGER AS $$
 BEGIN
     IF NEW.status = 'delivered' AND OLD.status != 'delivered' THEN
         -- Update inventory for each order item
-        UPDATE inventory 
+        UPDATE inventory
         SET current_stock = current_stock - oi.delivered_quantity,
             updated_at = NOW()
         FROM order_items oi
-        WHERE oi.order_id = NEW.id 
+        WHERE oi.order_id = NEW.id
         AND inventory.product_id = oi.product_id;
-        
+
         -- Create inventory movement records
         INSERT INTO inventory_movements (product_id, movement_type, quantity_change, reference_id, reference_type, created_at)
-        SELECT 
+        SELECT
             oi.product_id,
             'sale',
             -oi.delivered_quantity,
@@ -409,7 +409,7 @@ BEGIN
         FROM order_items oi
         WHERE oi.order_id = NEW.id;
     END IF;
-    
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -426,21 +426,21 @@ CREATE OR REPLACE FUNCTION update_outstanding_balance()
 RETURNS TRIGGER AS $$
 BEGIN
     IF NEW.status = 'confirmed' THEN
-        UPDATE clients 
+        UPDATE clients
         SET outstanding_balance = outstanding_balance - NEW.amount,
             updated_at = NOW()
         FROM orders o
-        WHERE o.id = NEW.order_id 
+        WHERE o.id = NEW.order_id
         AND clients.id = o.client_id;
-        
-        UPDATE resellers 
+
+        UPDATE resellers
         SET outstanding_balance = outstanding_balance - NEW.amount,
             updated_at = NOW()
         FROM orders o
-        WHERE o.id = NEW.order_id 
+        WHERE o.id = NEW.order_id
         AND resellers.id = o.reseller_id;
     END IF;
-    
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;

@@ -1,6 +1,8 @@
-from sqlalchemy.orm import Session
-from app.models.logistics import Route
 import uuid
+
+from sqlalchemy.orm import Session
+
+from app.models.logistics import Route
 
 
 def create_route(db: Session, route_data: dict):

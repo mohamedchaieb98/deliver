@@ -215,7 +215,7 @@ volumes:
 
 ### Timeline: 6-9 weeks total
 - **Phase 1 (MVP)**: 3-4 weeks
-- **Phase 2 (Enhanced)**: 2-3 weeks  
+- **Phase 2 (Enhanced)**: 2-3 weeks
 - **Phase 3 (Polish)**: 1-2 weeks
 
 ### Required Skills

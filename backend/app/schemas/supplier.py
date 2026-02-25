@@ -1,7 +1,9 @@
-from pydantic import BaseModel, EmailStr, Field
-from typing import Optional
-from datetime import datetime
 import uuid
+from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel, EmailStr
+
 
 class SupplierBase(BaseModel):
     name: str
@@ -10,8 +12,10 @@ class SupplierBase(BaseModel):
     phone_number: Optional[str] = None
     address: Optional[str] = None
 
+
 class SupplierCreate(SupplierBase):
     pass
+
 
 class SupplierUpdate(BaseModel):
     name: Optional[str] = None
@@ -21,6 +25,7 @@ class SupplierUpdate(BaseModel):
     address: Optional[str] = None
     is_active: Optional[bool] = None
 
+
 class SupplierResponse(SupplierBase):
     id: uuid.UUID
     is_active: bool
@@ -28,4 +33,4 @@ class SupplierResponse(SupplierBase):
     updated_at: datetime
 
     class Config:
-        from_attributes = True  
+        from_attributes = True

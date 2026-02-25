@@ -1,7 +1,8 @@
-from pydantic import BaseModel
-from typing import Optional
-from datetime import date, time, datetime
 import uuid
+from datetime import date, datetime, time
+from typing import Optional
+
+from pydantic import BaseModel
 
 
 class RouteBase(BaseModel):

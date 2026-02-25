@@ -19,13 +19,13 @@ Votre application fonctionne selon l'architecture **Client-Serveur** avec:
 └─────────────────────────────────────────────────────────────────┘
    ↓
    📄 Fichier: src/pages/admin/DeliverersReal.tsx
-   
+
    const [deliverers, setDeliverers] = useState<Deliverer[]>([]);
-   
+
    useEffect(() => {
      fetchDeliverers();  // ← Appel au chargement du composant
    }, []);
-   
+
    const fetchDeliverers = async () => {
      const data = await delivererAPI.getAll();  // ← Utilise le service API
      setDeliverers(data);  // ← Met à jour l'état React
@@ -36,17 +36,17 @@ Votre application fonctionne selon l'architecture **Client-Serveur** avec:
 └─────────────────────────────────────────────────────────────────┘
    ↓
    📄 Fichier: src/services/api.ts
-   
+
    const API_BASE_URL = 'http://localhost:8000/api/v1';
-   
+
    export const delivererAPI = {
      getAll: () => apiCall('/deliverers'),  // ← URL complète
    };
-   
+
    async function apiCall(endpoint: string, options: RequestInit = {}) {
      const url = `${API_BASE_URL}${endpoint}`;
      // URL finale: http://localhost:8000/api/v1/deliverers
-     
+
      const response = await fetch(url, config);
      return await response.json();
    }
@@ -64,12 +64,12 @@ Votre application fonctionne selon l'architecture **Client-Serveur** avec:
 └─────────────────────────────────────────────────────────────────┘
    ↓
    📄 Fichier: app/main.py
-   
+
    from fastapi import FastAPI
    from app.api.v1.router import api_router
-   
+
    app = FastAPI()
-   
+
    # Configuration CORS (autoriser requêtes depuis le frontend)
    app.add_middleware(
        CORSMiddleware,
@@ -77,7 +77,7 @@ Votre application fonctionne selon l'architecture **Client-Serveur** avec:
        allow_methods=["*"],
        allow_headers=["*"],
    )
-   
+
    # Inclusion des routes API
    app.include_router(api_router, prefix="/api/v1")
 
@@ -86,7 +86,7 @@ Votre application fonctionne selon l'architecture **Client-Serveur** avec:
 └─────────────────────────────────────────────────────────────────┘
    ↓
    📄 Fichier: app/api/v1/router.py
-   
+
    api_router = APIRouter()
    api_router.include_router(deliverers.router, prefix="/deliverers")
    # Aiguille vers: app/api/v1/endpoints/deliverers.py
@@ -96,7 +96,7 @@ Votre application fonctionne selon l'architecture **Client-Serveur** avec:
 └─────────────────────────────────────────────────────────────────┘
    ↓
    📄 Fichier: app/api/v1/endpoints/deliverers.py
-   
+
    @router.get("/", response_model=List[DelivererResponse])
    def get_deliverers(
        skip: int = 0,
@@ -106,14 +106,14 @@ Votre application fonctionne selon l'architecture **Client-Serveur** avec:
        db: Session = Depends(get_db)  # ← Injection de dépendance pour DB
    ):
        """Récupère tous les livreurs avec filtres optionnels"""
-       
+
        query = db.query(Deliverer)
-       
+
        if active is not None:
            query = query.filter(Deliverer.is_available == active)
        if territory:
            query = query.filter(Deliverer.territory == territory)
-       
+
        deliverers = query.offset(skip).limit(limit).all()
        return deliverers  # ← Retourne la liste
 
@@ -122,10 +122,10 @@ Votre application fonctionne selon l'architecture **Client-Serveur** avec:
 └─────────────────────────────────────────────────────────────────┘
    ↓
    📄 Fichier: app/models/deliverer.py
-   
+
    class Deliverer(Base):
        __tablename__ = "deliverers"
-       
+
        id = Column(String(36), primary_key=True)
        name = Column(String(200), nullable=False)
        employee_id = Column(String(50), unique=True)
@@ -142,8 +142,8 @@ Votre application fonctionne selon l'architecture **Client-Serveur** avec:
 └─────────────────────────────────────────────────────────────────┘
    ↓
    💾 Fichier: water_delivery.db (SQLite)
-   
-   SELECT * FROM deliverers 
+
+   SELECT * FROM deliverers
    WHERE (is_available = ? OR is_available IS NULL)
    AND (territory = ? OR territory IS NULL)
    OFFSET 0 LIMIT 100;
@@ -153,13 +153,13 @@ Votre application fonctionne selon l'architecture **Client-Serveur** avec:
 └─────────────────────────────────────────────────────────────────┘
    ↓
    📄 Fichier: app/schemas/deliverer.py
-   
+
    class DelivererResponse(DelivererBase):
        id: str
        created_at: datetime
        updated_at: datetime
        current_location: Optional[str] = None
-       
+
        class Config:
            from_attributes = True  # Convertit modèle SQLAlchemy → Pydantic
 
@@ -169,7 +169,7 @@ Votre application fonctionne selon l'architecture **Client-Serveur** avec:
    ↓
    200 OK HTTP/1.1
    Content-Type: application/json
-   
+
    [
      {
        "id": "uuid-1234",
@@ -195,10 +195,10 @@ Votre application fonctionne selon l'architecture **Client-Serveur** avec:
 └─────────────────────────────────────────────────────────────────┘
    ↓
    ✅ Dans React:
-   
+
    const data = await delivererAPI.getAll();  // ← Reçoit JSON
    setDeliverers(data);  // ← Met à jour state React
-   
+
    ✅ L'interface affiche le tableau avec les données
 
 ```
@@ -355,8 +355,8 @@ def create_deliverer(
 
 **Flux Validation:**
 ```
-JSON reçu → Pydantic valide les champs → 
-Si valide: crée instance SQLAlchemy → 
+JSON reçu → Pydantic valide les champs →
+Si valide: crée instance SQLAlchemy →
 Si invalide: retourne erreur 422
 ```
 
@@ -387,14 +387,14 @@ def update_deliverer(
     db_deliverer = db.query(Deliverer).filter(
         Deliverer.id == deliverer_id
     ).first()
-    
+
     if not db_deliverer:
         raise HTTPException(status_code=404, detail="Not found")
-    
+
     update_data = deliverer.dict(exclude_unset=True)  # Seulement champs modifiés
     for field, value in update_data.items():
         setattr(db_deliverer, field, value)  # Met à jour
-    
+
     db.commit()
     db.refresh(db_deliverer)
     return db_deliverer
@@ -423,10 +423,10 @@ def delete_deliverer(deliverer_id: str, db: Session = Depends(get_db)):
     db_deliverer = db.query(Deliverer).filter(
         Deliverer.id == deliverer_id
     ).first()
-    
+
     if not db_deliverer:
         raise HTTPException(status_code=404, detail="Not found")
-    
+
     db.delete(db_deliverer)
     db.commit()
     return {"message": "Deliverer deleted successfully"}
@@ -587,11 +587,11 @@ Content-Length: 256
 
 **5️⃣ Base de données:**
 ```sql
-INSERT INTO deliverers 
+INSERT INTO deliverers
   (id, name, employee_id, email, phone_number, territory, is_available, vehicle_info, created_at)
-VALUES 
-  ('uuid-1234-...', 'Fatima', 'EMP003', 'fatima@company.com', 
-   '+212612345679', 'West', true, 
+VALUES
+  ('uuid-1234-...', 'Fatima', 'EMP003', 'fatima@company.com',
+   '+212612345679', 'West', true,
    '{"make": "Mercedes", "model": "Sprinter"}', '2025-02-14 15:30:00')
 ```
 
@@ -737,4 +737,3 @@ npm start  # ou yarn dev pour Vite
 | GET | `/orders` | Commandes | `orderAPI.getAll()` |
 
 Ce flux s'applique à tous les autres modèles (clients, orders, products, etc.)
-

@@ -1,21 +1,21 @@
 from fastapi import APIRouter
 
 from app.api.v1.endpoints import (
-    deliverers,
     clients,
-    resellers,
-    suppliers,
-    products,
+    dashboard,
+    deliverers,
+    expenses,
     inventory,
     orders,
-    routes,
     payments,
-    expenses,
-    dashboard
+    products,
+    resellers,
+    routes,
+    suppliers,
 )
 
 api_router = APIRouter()
-# Ici : 
+# Ici :
 # 'prefix' est pour l'URL (/api/v1/clients)
 # 'tags' est pour l'affichage Swagger
 api_router.include_router(deliverers.router, prefix="/deliverers", tags=["deliverers"])

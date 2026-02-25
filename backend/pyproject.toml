@@ -1,0 +1,55 @@
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = 'backend/.*\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | migrations
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 88
+known_first_party = ["app"]
+src_paths = ["backend"]
+extend_skip = ["migrations", "venv"]
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+exclude = [
+    "backend/migrations/",
+    "backend/venv/",
+]
+
+[tool.bandit]
+exclude_dirs = ["backend/migrations", "backend/venv", "backend/test_*"]
+skips = ["B101"]  # Skip assert_used test
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203", "W503", "E501"]
+exclude = [
+    ".git",
+    "__pycache__",
+    "backend/venv",
+    "backend/migrations",
+    ".mypy_cache",
+    ".pytest_cache",
+]

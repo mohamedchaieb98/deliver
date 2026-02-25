@@ -1,7 +1,9 @@
-from pydantic import BaseModel, EmailStr
-from typing import Optional
-from datetime import datetime
 import uuid
+from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel, EmailStr
+
 
 # Base schema with common fields
 class ResellerBase(BaseModel):
@@ -10,9 +12,11 @@ class ResellerBase(BaseModel):
     email: Optional[EmailStr] = None
     phone_number: Optional[str] = None
 
+
 # Schema for creating a new reseller
 class ResellerCreate(ResellerBase):
     pass
+
 
 # Schema for updating a reseller (all fields optional)
 class ResellerUpdate(BaseModel):
@@ -21,6 +25,7 @@ class ResellerUpdate(BaseModel):
     email: Optional[EmailStr] = None
     phone_number: Optional[str] = None
     is_active: Optional[bool] = None
+
 
 # Schema for API responses
 class ResellerResponse(ResellerBase):

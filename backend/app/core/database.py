@@ -1,15 +1,13 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-import os
 
 # Force SQLite for development coniguration
 DATABASE_URL = "sqlite:///./water_delivery.db"
 
 # SQLite Database (for development)
 engine = create_engine(
-    DATABASE_URL, 
-    connect_args={"check_same_thread": False}  # Only needed for SQLite
+    DATABASE_URL, connect_args={"check_same_thread": False}  # Only needed for SQLite
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -20,6 +18,7 @@ Base = declarative_base()
 redis_client = None
 print("[INFO] Using SQLite database for development")
 
+
 # Database dependency for FastAPI
 def get_db():
     db = SessionLocal()
@@ -27,6 +26,7 @@ def get_db():
         yield db
     finally:
         db.close()
+
 
 # Redis dependency for FastAPI
 def get_redis():

@@ -35,7 +35,7 @@ services:
 
   # FastAPI Backend
   backend:
-    build: 
+    build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: water_delivery_backend

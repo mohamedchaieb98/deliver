@@ -1,10 +1,11 @@
+from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
 
 from app.core.database import get_db
 from app.crud import payment as crud_payment
-from app.schemas.payment import PaymentCreate, PaymentUpdate, PaymentResponse
+from app.schemas.payment import PaymentCreate, PaymentResponse, PaymentUpdate
 
 router = APIRouter()
 
@@ -28,8 +29,12 @@ def get_payment(payment_id: str, db: Session = Depends(get_db)):
 
 
 @router.put("/{payment_id}", response_model=PaymentResponse)
-def update_payment(payment_id: str, payment_in: PaymentUpdate, db: Session = Depends(get_db)):
-    payment = crud_payment.update_payment(db, payment_id=payment_id, update_data=payment_in.dict(exclude_unset=True))
+def update_payment(
+    payment_id: str, payment_in: PaymentUpdate, db: Session = Depends(get_db)
+):
+    payment = crud_payment.update_payment(
+        db, payment_id=payment_id, update_data=payment_in.dict(exclude_unset=True)
+    )
     if not payment:
         raise HTTPException(status_code=404, detail="Payment not found")
     return payment

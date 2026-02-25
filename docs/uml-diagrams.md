@@ -6,7 +6,7 @@
 graph TB
     Admin((Admin))
     Deliverer((Deliverer))
-    
+
     %% Admin Use Cases
     Admin --> UC1[Create Orders for Clients]
     Admin --> UC2[Create Orders for Resellers]
@@ -18,7 +18,7 @@ graph TB
     Admin --> UC8[Generate Reports]
     Admin --> UC9[Manage Deliverer Accounts]
     Admin --> UC10[Manage Suppliers]
-    
+
     %% Deliverer Use Cases (Mobile)
     Deliverer --> UC11[View Daily Route]
     Deliverer --> UC12[Update Delivery Status]
@@ -47,7 +47,7 @@ classDiagram
         +updateLocation()
         +markAvailable()
     }
-    
+
     class Client {
         +id: UUID
         +name: String
@@ -63,7 +63,7 @@ classDiagram
         +calculateBalance()
         +applyPayment()
     }
-    
+
     class Reseller {
         +id: UUID
         +businessName: String
@@ -77,7 +77,7 @@ classDiagram
         +totalSales: Decimal
         +calculateCommission()
     }
-    
+
     class Product {
         +id: UUID
         +name: String
@@ -91,7 +91,7 @@ classDiagram
         +updatePrice()
         +calculateMargin()
     }
-    
+
     class Inventory {
         +id: UUID
         +productId: UUID
@@ -106,7 +106,7 @@ classDiagram
         +releaseStock()
         +isLowStock()
     }
-    
+
     class Order {
         +id: UUID
         +orderNumber: String
@@ -122,7 +122,7 @@ classDiagram
         +calculateTotal()
         +updateStatus()
     }
-    
+
     class OrderItem {
         +id: UUID
         +orderId: UUID
@@ -133,7 +133,7 @@ classDiagram
         +deliveredQuantity: Integer
         +calculateTotal()
     }
-    
+
     class DeliveryRoute {
         +id: UUID
         +routeName: String
@@ -148,7 +148,7 @@ classDiagram
         +optimizeRoute()
         +calculateETA()
     }
-    
+
     class RouteStop {
         +id: UUID
         +routeId: UUID
@@ -161,7 +161,7 @@ classDiagram
         +notes: String
         +markCompleted()
     }
-    
+
     class Payment {
         +id: UUID
         +orderId: UUID
@@ -172,7 +172,7 @@ classDiagram
         +status: PaymentStatus
         +validatePayment()
     }
-    
+
     class Expense {
         +id: UUID
         +delivererId: UUID
@@ -186,7 +186,7 @@ classDiagram
         +status: ExpenseStatus
         +submitForApproval()
     }
-    
+
     class ExpenseCategory {
         +id: UUID
         +name: String
@@ -195,7 +195,7 @@ classDiagram
         +requiresReceipt: Boolean
         +isActive: Boolean
     }
-    
+
     class Supplier {
         +id: UUID
         +name: String
@@ -207,7 +207,7 @@ classDiagram
         +isActive: Boolean
         +addProduct()
     }
-    
+
     class Address {
         +street: String
         +city: String
@@ -219,23 +219,23 @@ classDiagram
         +getCoordinates()
         +calculateDistance()
     }
-    
+
     %% Relationships
     Deliverer ||--o{ DeliveryRoute : "assigned"
     DeliveryRoute ||--o{ RouteStop : "contains"
     RouteStop ||--|| Order : "delivers"
-    
+
     Order ||--|| Client : "placed by"
     Order ||--o{ OrderItem : "contains"
     Order ||--o{ Payment : "paid through"
     OrderItem ||--|| Product : "for"
-    
+
     Product ||--|| Supplier : "supplied by"
     Product ||--|| Inventory : "tracked in"
-    
+
     Deliverer ||--o{ Expense : "incurs"
     ExpenseCategory ||--o{ Expense : "categorizes"
-    
+
     Client ||--|| Address : "located at"
     Reseller ||--|| Address : "located at"
     Supplier ||--|| Address : "located at"
@@ -251,18 +251,18 @@ sequenceDiagram
     participant DB as PostgreSQL
     participant Mobile as Mobile Interface
     participant D as Deliverer
-    
+
     A->>Web: Open admin dashboard
     Web->>API: GET /clients (get client list)
     API->>DB: Fetch active clients
     DB-->>API: Client list
     API-->>Web: Client options
-    
+
     Web->>API: GET /products (get available products)
     API->>DB: Fetch products with inventory
     DB-->>API: Products with stock levels
     API-->>Web: Product options with availability
-    
+
     A->>Web: Fill order form (client, products, quantities)
     Web->>API: POST /orders (create order)
     API->>API: Validate order data
@@ -271,20 +271,20 @@ sequenceDiagram
     API->>DB: Reserve inventory & create order
     DB-->>API: Order ID
     API-->>Web: Order created successfully
-    
+
     A->>Web: Assign order to deliverer route
     Web->>API: GET /deliverers/available
     API->>DB: Get available deliverers
     DB-->>API: Available deliverer list
     API-->>Web: Deliverer options
-    
+
     A->>Web: Select deliverer and assign
     Web->>API: POST /routes (create/update route)
     API->>DB: Create route with order
     DB-->>API: Route ID
     API->>Mobile: WebSocket notification (new order assigned)
     API-->>Web: Route assigned successfully
-    
+
     Mobile->>D: Real-time update: New order assigned
     D->>Mobile: Open mobile view to see route
     Mobile->>API: GET /routes/deliverer/{deliverer_id} (get today's route)
@@ -301,38 +301,38 @@ graph TD
     CheckRoute -->|No| WaitForRoute[Wait for Route Assignment]
     WaitForRoute --> CheckRoute
     CheckRoute -->|Yes| StartRoute[Mark Route as Started]
-    
+
     StartRoute --> GetNextStop[Get Next Route Stop]
     GetNextStop --> Navigate[Navigate to Location]
     Navigate --> Arrived{Arrived at Location?}
     Arrived -->|No| UpdateLocation[Update GPS Location]
     UpdateLocation --> Navigate
-    
+
     Arrived -->|Yes| MarkArrived[Mark Arrived at Stop]
     MarkArrived --> ContactCustomer[Contact Customer]
     ContactCustomer --> CustomerAvailable{Customer Available?}
-    
+
     CustomerAvailable -->|No| RescheduleDelivery[Schedule Redelivery]
     RescheduleDelivery --> UpdateOrderStatus[Update Order Status]
-    
+
     CustomerAvailable -->|Yes| DeliverProducts[Deliver Products]
     DeliverProducts --> TakePhoto[Take Delivery Confirmation Photo]
     TakePhoto --> CollectPayment{Payment Required?}
-    
+
     CollectPayment -->|Yes| ProcessPayment[Record Payment Collection]
     ProcessPayment --> UpdateInventory[Update Mobile Inventory]
     CollectPayment -->|No| UpdateInventory
-    
+
     UpdateInventory --> MarkCompleted[Mark Stop as Completed]
     MarkCompleted --> UpdateOrderStatus
     UpdateOrderStatus --> SyncData[Sync Data with Server]
     SyncData --> MoreStops{More Stops in Route?}
-    
+
     MoreStops -->|Yes| GetNextStop
     MoreStops -->|No| CompleteRoute[Mark Route as Completed]
     CompleteRoute --> SubmitExpenses[Submit Route Expenses]
     SubmitExpenses --> End([End Route])
-    
+
     RescheduleDelivery --> MoreStops
 ```
 
@@ -351,7 +351,7 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
-    
+
     DELIVERERS {
         uuid id PK
         uuid user_id FK
@@ -365,7 +365,7 @@ erDiagram
         point current_location
         timestamp last_location_update
     }
-    
+
     CLIENTS {
         uuid id PK
         string name
@@ -382,7 +382,7 @@ erDiagram
         boolean is_active
         timestamp created_at
     }
-    
+
     RESELLERS {
         uuid id PK
         string business_name
@@ -398,7 +398,7 @@ erDiagram
         boolean is_active
         timestamp created_at
     }
-    
+
     SUPPLIERS {
         uuid id PK
         string name
@@ -410,7 +410,7 @@ erDiagram
         boolean is_active
         timestamp created_at
     }
-    
+
     PRODUCTS {
         uuid id PK
         string name
@@ -423,7 +423,7 @@ erDiagram
         boolean is_active
         timestamp created_at
     }
-    
+
     INVENTORY {
         uuid id PK
         uuid product_id FK
@@ -435,7 +435,7 @@ erDiagram
         string location
         timestamp updated_at
     }
-    
+
     ORDERS {
         uuid id PK
         string order_number UK
@@ -451,7 +451,7 @@ erDiagram
         text notes
         timestamp created_at
     }
-    
+
     ORDER_ITEMS {
         uuid id PK
         uuid order_id FK
@@ -461,7 +461,7 @@ erDiagram
         decimal total_price
         integer delivered_quantity
     }
-    
+
     DELIVERY_ROUTES {
         uuid id PK
         string route_name
@@ -475,7 +475,7 @@ erDiagram
         decimal total_distance
         timestamp created_at
     }
-    
+
     ROUTE_STOPS {
         uuid id PK
         uuid route_id FK
@@ -489,7 +489,7 @@ erDiagram
         enum status
         text notes
     }
-    
+
     PAYMENTS {
         uuid id PK
         uuid order_id FK
@@ -501,7 +501,7 @@ erDiagram
         uuid processed_by FK
         timestamp created_at
     }
-    
+
     EXPENSES {
         uuid id PK
         uuid deliverer_id FK
@@ -515,7 +515,7 @@ erDiagram
         enum status
         timestamp created_at
     }
-    
+
     EXPENSE_CATEGORIES {
         uuid id PK
         string name
@@ -524,23 +524,23 @@ erDiagram
         boolean requires_receipt
         boolean is_active
     }
-    
+
     %% Relationships
     USERS ||--o| DELIVERERS : "one-to-zero-or-one"
     DELIVERERS ||--o{ DELIVERY_ROUTES : "one-to-many"
     DELIVERY_ROUTES ||--o{ ROUTE_STOPS : "one-to-many"
     ROUTE_STOPS ||--|| ORDERS : "one-to-one"
-    
+
     CLIENTS ||--o{ ORDERS : "one-to-many"
     RESELLERS ||--o{ ORDERS : "one-to-many"
     DELIVERERS ||--o{ ORDERS : "one-to-many"
     ORDERS ||--o{ ORDER_ITEMS : "one-to-many"
     ORDERS ||--o{ PAYMENTS : "one-to-many"
-    
+
     SUPPLIERS ||--o{ PRODUCTS : "one-to-many"
     PRODUCTS ||--|| INVENTORY : "one-to-one"
     PRODUCTS ||--o{ ORDER_ITEMS : "one-to-many"
-    
+
     DELIVERERS ||--o{ EXPENSES : "one-to-many"
     EXPENSE_CATEGORIES ||--o{ EXPENSES : "one-to-many"
     USERS ||--o{ PAYMENTS : "processed-by"
@@ -554,7 +554,7 @@ graph TB
         Desktop[Desktop Browser - Admin]
         Mobile[Mobile Browser - Deliverers]
     end
-    
+
     subgraph "Frontend - Single Responsive Web App"
         React[React Application]
         AdminUI[Admin Interface Components]
@@ -563,14 +563,14 @@ graph TB
         Router[React Router]
         State[State Management]
     end
-    
+
     subgraph "API Layer"
         FastAPI[FastAPI Backend]
         WebSocket[Real-time Updates]
         FileUpload[File Upload Handler]
         CORS[CORS Handler]
     end
-    
+
     subgraph "Business Logic"
         OrderService[Order Management]
         RouteService[Route Optimization]
@@ -578,19 +578,19 @@ graph TB
         PaymentService[Payment Processing]
         NotificationService[Notification System]
     end
-    
+
     subgraph "Data Layer"
         PostgreSQL[(PostgreSQL Database)]
         Redis[(Redis Cache)]
         FileStorage[(File Storage - Photos)]
     end
-    
+
     subgraph "External Services"
         MapsAPI[Google Maps API]
         SMSService[SMS Notifications]
         EmailService[Email Service]
     end
-    
+
     %% Connections
     Desktop --> React
     Mobile --> React
@@ -600,7 +600,7 @@ graph TB
     React --> State
     React --> PWA
     React --> FastAPI
-    
+
     FastAPI --> CORS
     FastAPI --> WebSocket
     FastAPI --> OrderService
@@ -608,20 +608,20 @@ graph TB
     FastAPI --> InventoryService
     FastAPI --> PaymentService
     FastAPI --> NotificationService
-    
+
     OrderService --> PostgreSQL
     RouteService --> PostgreSQL
     InventoryService --> PostgreSQL
     PaymentService --> PostgreSQL
     NotificationService --> Redis
-    
+
     FastAPI --> Redis
     FileUpload --> FileStorage
-    
+
     RouteService --> MapsAPI
     NotificationService --> SMSService
     NotificationService --> EmailService
-    
+
     PWA --> FileStorage
 ```
 

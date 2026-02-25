@@ -1,6 +1,7 @@
-from sqlalchemy import Column, String, Boolean, Date, DateTime, Text, JSON
-from sqlalchemy.sql import func
 import uuid
+
+from sqlalchemy import JSON, Boolean, Column, Date, DateTime, String
+from sqlalchemy.sql import func
 
 from app.core.database import Base
 
@@ -8,7 +9,9 @@ from app.core.database import Base
 class Deliverer(Base):
     __tablename__ = "deliverers"
 
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()), index=True)
+    id = Column(
+        String(36), primary_key=True, default=lambda: str(uuid.uuid4()), index=True
+    )
     name = Column(String(200), nullable=False)
     employee_id = Column(String(50), unique=True, nullable=False, index=True)
     email = Column(String(255), nullable=True)

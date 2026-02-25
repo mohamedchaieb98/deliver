@@ -114,8 +114,8 @@
 ## Acceptance Criteria Examples
 
 ### Admin Creates Order
-**Given** I am logged in as an admin  
-**When** I create a new order for a client  
+**Given** I am logged in as an admin
+**When** I create a new order for a client
 **Then** the system should:
 - Validate that products are in stock
 - Calculate total amount automatically
@@ -124,8 +124,8 @@
 - Send confirmation notification
 
 ### Deliverer Completes Delivery
-**Given** I am a deliverer with an assigned route  
-**When** I mark a delivery as completed  
+**Given** I am a deliverer with an assigned route
+**When** I mark a delivery as completed
 **Then** the system should:
 - Update order status to "Delivered"
 - Reduce inventory by delivered quantity
@@ -134,8 +134,8 @@
 - Sync with admin dashboard in real-time
 
 ### Payment Collection
-**Given** I am a deliverer collecting payment  
-**When** I record a payment received  
+**Given** I am a deliverer collecting payment
+**When** I record a payment received
 **Then** the system should:
 - Update customer outstanding balance
 - Record payment method and amount
@@ -144,8 +144,8 @@
 - Sync payment data to admin system
 
 ### Inventory Alert
-**Given** a product reaches minimum stock level  
-**When** inventory is updated  
+**Given** a product reaches minimum stock level
+**When** inventory is updated
 **Then** the system should:
 - Send alert notification to admin
 - Flag product as "Low Stock"
