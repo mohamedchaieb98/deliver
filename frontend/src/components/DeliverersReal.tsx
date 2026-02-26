@@ -230,11 +230,14 @@ const DeliverersReal = () => {
                 </tr>
               </thead>
               <tbody>
-                {deliverers.map((deliverer, index) => (
-                  <tr key={deliverer.id} style={{ 
-                    borderBottom: index < deliverers.length - 1 ? '1px solid #e5e7eb' : 'none',
-                    '&:hover': { background: '#f9fafb' }
-                  }}>
+                                {deliverers.map((deliverer, index) => (
+                  <tr 
+                    key={deliverer.id} 
+                    className="hover:bg-gray-50 transition-colors"
+                    style={{ 
+                      borderBottom: index < deliverers.length - 1 ? '1px solid #e5e7eb' : 'none'
+                    }}
+                  >
                     <td style={{ padding: '16px' }}>
                       <div style={{ display: 'flex', alignItems: 'center' }}>
                         <div style={{
