@@ -136,3 +136,25 @@ export const inventoryAPI = {
     method: 'DELETE',
   }),
 };
+
+//Supplier API functions
+export const SupplierAPI = {
+  getAll: () => apiCall('/suppliers'),
+
+  getById: (id: string) => apiCall(`/suppliers/${id}`),
+  
+  create: (supplier: any) => apiCall('/suppliers', {
+    method: 'POST',
+    body: JSON.stringify(supplier),
+  }),
+  
+  update: (id: string, supplier: any) => apiCall(`/suppliers/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(supplier),
+  }),
+  
+  delete: (id: string) => apiCall(`/suppliers/${id}`, {
+    method: 'DELETE',
+  }),
+
+};
