@@ -5,6 +5,8 @@ import Dashboard from './pages/Dashboard';
 import Clients from './pages/Clients';
 import Orders from './pages/Orders';
 import DeliverersReal from './components/DeliverersReal';
+import SupplierTable from './components/SupplierTable';
+import SuppliersPage from './pages/Suppliers';
 
 interface PlaceholderPageProps {
   title: string;
@@ -21,7 +23,7 @@ const PlaceholderPage: React.FC<PlaceholderPageProps> = ({ title }) => {
         </p>
       </div>
       
-      <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
+      {/* <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
         <div className="text-6xl mb-4">🚧</div>
         <h3 className="text-xl font-semibold text-gray-900 mb-2">
           {title} Management Coming Soon
@@ -33,7 +35,7 @@ const PlaceholderPage: React.FC<PlaceholderPageProps> = ({ title }) => {
           <p>Backend API: /api/v1/{title.toLowerCase()}</p>
           <p>Ready for implementation</p>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
@@ -49,7 +51,7 @@ const App: React.FC = () => {
         <Route path="/inventory" element={<PlaceholderPage title="Inventory" />} />
         <Route path="/routes" element={<PlaceholderPage title="Routes" />} />
         <Route path="/expenses" element={<PlaceholderPage title="Expenses" />} />
-        <Route path="/suppliers" element={<PlaceholderPage title="Suppliers" />} />
+        <Route path="/suppliers" element={<SuppliersPage />} />
       </Routes>
     </AdminLayout>
   );
